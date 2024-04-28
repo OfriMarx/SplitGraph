@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">SplitGraph</string>
     <string name="open_splitwise">Export in Spiltwise</string>
+    <string name="total_sum_f">Total sum: %f</string>
 </resources>

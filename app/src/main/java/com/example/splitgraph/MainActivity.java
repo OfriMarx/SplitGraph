@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements SpinnerOnSelected
             try {
                 InputStream sharedFile = getContentResolver().openInputStream(sharedFileUri);
                 if (sharedFile != null) {
-                    mChart = new SplitPieChart(findViewById(R.id.pie_chart), chartName, IOUtils.toByteArray(sharedFile));
+                    mChart = new SplitPieChart(this, findViewById(R.id.pie_chart), findViewById(R.id.total_text), chartName, IOUtils.toByteArray(sharedFile));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

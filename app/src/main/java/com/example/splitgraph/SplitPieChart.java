@@ -1,6 +1,9 @@
 package com.example.splitgraph;
 
+import android.app.Application;
+import android.content.Context;
 import android.graphics.Color;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -19,26 +22,29 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SplitPieChart {
 
     private final PieChart mChart;
+    private final TextView mText;
     private final byte[] mCsvContents;
+    private final Context mContext;
 
-    public SplitPieChart(PieChart chart, String name, byte[] csvContents) {
+    public SplitPieChart(Context context, PieChart chart, TextView text, String name, byte[] csvContents) {
 
         this.mChart = chart;
         this.mChart.setCenterText(name);
         this.mCsvContents = csvContents;
+        this.mText = text;
+        this.mContext = context;
     }
 
     public void setPieChart(LocalDate fromDate) {
-        Map<String, Float> entrieMap = new HashMap<>();
-        String name = (String) mChart.getCenterText();
         CSVReaderHeaderAware csv;
-
         try {
             csv = new CSVReaderHeaderAware(new InputStreamReader(new ByteArrayInputStream(mCsvContents)));
         } catch (IOException e) {
@@ -49,6 +55,7 @@ public class SplitPieChart {
             csv.readMap();
         } catch (IOException | CsvValidationException ignored) {}
 
+        Map<String, Float> entrieMap = new HashMap<>();
         while (true) {
             try {
                 String[] currValues = csv.readNext("Category", "Cost", "Date");
@@ -72,8 +79,13 @@ public class SplitPieChart {
         }
 
         List<PieEntry> entries = new ArrayList<>();
-        entrieMap.forEach((label, sum) -> entries.add(new PieEntry(sum, label)));
+        AtomicReference<Float> finalSum = new AtomicReference<>((float) 0);
+        entrieMap.forEach((label, sum) -> {
+            entries.add(new PieEntry(sum, label));
+            finalSum.updateAndGet(v -> v + sum);
+        });
 
+        String name = (String) mChart.getCenterText();
         PieDataSet dataSet = new PieDataSet(entries, "My Chart");
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         dataSet.setValueTextSize(12f);
@@ -90,5 +102,7 @@ public class SplitPieChart {
         mChart.animateY(2000);
         mChart.setCenterText(name);
         mChart.invalidate(); // refresh
+
+        mText.setText(String.format(Locale.getDefault(), mContext.getResources().getString(R.string.total_sum_f), finalSum.get()));
     }
 }
