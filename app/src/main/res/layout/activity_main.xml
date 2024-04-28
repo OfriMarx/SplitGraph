@@ -15,9 +15,19 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textSize="20sp"
             android:entries="@{viewModel.spinnerItems}"
             android:onItemSelected="@{(parent, view, position, id) -> viewModel.onItemSelected(position)}"
             />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:text="Wow: wow"/>
     
         <com.github.mikephil.charting.charts.PieChart
             android:layout_width="match_parent"
