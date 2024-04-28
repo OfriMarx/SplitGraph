@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SplitGraph</string>
+    <string name="open_splitwise">Export in Spiltwise</string>
+</resources>
